@@ -193,7 +193,7 @@ def testPartRefReq():
 
 
 def testSortFull():
-    nbyte = 1021
+    nbyte = 4096
     inBuf = bytearray([random.getrandbits(8) for _ in range(nbyte)])
     inInts = pylibsort.bytesToInts(inBuf)
 
@@ -216,7 +216,6 @@ def testSortPartial():
     pos = 4
     width = 8
     refBuf = bytearray([random.getrandbits(8) for _ in range(nbyte)])
-    # refInts = pylibsort.bytesToInts(inBuf)
 
     testBuf = refBuf.copy()
     try:
@@ -225,7 +224,7 @@ def testSortPartial():
         raise testException("SortPartial", "PyLib sort error") from e
 
     try:
-        pylibsort.checkPartial(testBuf, refBuf, boundaries, pos, width)
+        pylibsort.checkPartial(refBuf, testBuf, boundaries, pos, width)
     except Exception as e:
         raise testException("SortFromBytes", str(e))
 

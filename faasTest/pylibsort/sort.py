@@ -64,11 +64,12 @@ def checkSortFull(new, orig):
             raise sortResultException(i, origSorted[i], new[i])
 
 
-def checkPartial(refBytes, testBytes, caps, pos, width):
+def checkPartial(refBytes, testBytes, boundaries, pos, width):
     refInts = bytesToInts(refBytes)
     testInts = bytesToInts(testBytes)
-    caps = np.array(caps)
 
+    caps = np.diff(boundaries, append=len(testInts))
+ 
     if len(refInts) != len(testInts):
         raise sortException("test length doesnt match reference: expected {}, got {}".format(
             len(refInts), len(testInts)))
@@ -77,12 +78,9 @@ def checkPartial(refBytes, testBytes, caps, pos, width):
         raise sortException("Not enough output buckets: expected {}, got {}".format(
             len(caps), (1 << width)))
 
-    # convert to word offset
-    caps = caps // 4
     expectGroups = np.repeat(np.arange(len(caps)), caps)
-    # boundaries = [i / 4 for i in boundaries]
 
-    testGroups = testInts & ((1 << width) - 1)
+    testGroups = (testInts >> pos) & ((1 << width) - 1)
     if not np.array_equal(testGroups, expectGroups):
         raise sortException("Output does not have expected groups")
 
@@ -123,4 +121,4 @@ def sortPartial(buf: bytearray, offset, width):
     if not res:
         raise RuntimeError("Libsort had an internal error")
 
-    return list(boundaries)
+    return np.array(boundaries)

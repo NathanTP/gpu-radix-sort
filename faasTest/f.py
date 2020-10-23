@@ -70,9 +70,12 @@ def f(event):
 
 def selfTest():
     """Main only used for testing purposes"""
+
+    import numpy as np
+
     # nElem = 256 
-    nElem = 256*(1024*1024)
-    # nElem = 1024*1024
+    # nElem = 256*(1024*1024)
+    nElem = 1024*1024
     nbyte = nElem*4
     offset = 0
     width = 8
@@ -139,7 +142,13 @@ def selfTest():
 
         outArr.Destroy()
 
-    pylibsort.checkPartial(inBuf, outBuf, outArr.shape.caps, offset, width)
+    # byte capacities to int boundaries 
+    caps = np.array(outArr.shape.caps) // 4
+    boundaries = np.cumsum(caps)
+    boundaries = np.roll(boundaries, 1)
+    boundaries[0] = 0
+
+    pylibsort.checkPartial(inBuf, outBuf, boundaries, offset, width)
 
     print("PASS")
 
@@ -196,6 +205,6 @@ def testGenerate():
 
 
 if __name__ == "__main__":
-    # selfTest()
-    directInvoke()
+    selfTest()
+    # directInvoke()
     # testGenerate()

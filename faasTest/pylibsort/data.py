@@ -299,9 +299,8 @@ def getOutputArray(req: dict):
 
 
 def writeOutput(req: dict, rawBytes, boundaries):
-    caps = np.array(boundaries)
-    caps *= 4
-    caps = np.diff(caps, append=len(rawBytes))
+    # int boundaries to byte capacities
+    caps = np.diff(boundaries*4, append=len(rawBytes))
     
     shape = ArrayShape.fromCaps(caps.tolist())
     outArr = fileDistribArray.Create(FileDistribArrayMount / req['output'], shape)
